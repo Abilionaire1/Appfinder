@@ -1,0 +1,6 @@
+2026-10-04 15:36:04 [45517665] INFO  SQL 165.2ms  SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='apps'
+2026-10-04 15:36:04 [45517665] INFO  REQ GET /
+2026-10-04 15:36:04 [45517665] INFO  SQL 3ms  SELECT * FROM apps ORDER BY rating DESC, reviews_count DESC
+2026-10-04 16:02:53 [6001f0ca] INFO  SQL 33.7ms  SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='apps'
+2026-10-04 16:02:53 [6001f0ca] INFO  REQ GET /
+2026-10-04 16:02:53 [6001f0ca] INFO  SQL 1.6ms  SELECT * FROM apps ORDER BY rating DESC, reviews_count DESC
