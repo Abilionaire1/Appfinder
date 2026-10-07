@@ -1,6 +1,4 @@
 <?php
-require_once __DIR__ . '/../includes/header.php';
-
 if (isset($_SESSION['user_id'])) {
     header('Location: ?page=dashboard');
     exit;
@@ -24,6 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Email atau password tidak sesuai.';
     }
 }
+
+require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="max-w-md mx-auto my-16 px-4">
