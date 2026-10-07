@@ -71,6 +71,75 @@ $bookmarkedApps = $stmtBm->fetchAll();
         </span>
     </div>
 
+    <?php if (!empty($bookmarkedApps)): ?>
+        <!-- Stack Generator / Winget Bundle Feature -->
+        <div class="mb-8 p-6 bg-gradient-to-r from-slate-900 to-navy rounded-2xl shadow-lg border border-slate-800 text-white relative overflow-hidden">
+            <!-- Decorative blur -->
+            <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-brand-500 rounded-full mix-blend-screen filter blur-[80px] opacity-30"></div>
+            
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-bold bg-brand-500/20 text-brand-300 border border-brand-500/30 uppercase tracking-wider mb-3">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        Fitur Eksklusif Login
+                    </div>
+                    <h3 class="text-xl font-bold font-heading mb-1">Stack Bundle Generator</h3>
+                    <p class="text-xs text-slate-400 max-w-lg">
+                        Selesai install ulang Windows? Salin command CLI di bawah untuk menginstall seluruh software tersimpan secara otomatis tanpa perlu mengunduh installer satu per satu.
+                    </p>
+                </div>
+                
+                <div class="bg-slate-950/50 p-1.5 rounded-xl border border-slate-800 w-full md:w-auto">
+                    <?php 
+                        $wingetApps = [];
+                        foreach ($bookmarkedApps as $app) {
+                            // Only include desktop software (Windows support) for Winget
+                            if (str_contains(strtolower($app['platforms']), 'windows') || str_contains(strtolower($app['platforms']), 'mac') || str_contains(strtolower($app['platforms']), 'linux')) {
+                                $wingetApps[] = '"' . str_replace('"', '\"', $app['name']) . '"';
+                            }
+                        }
+                        if (empty($wingetApps)) {
+                            $cliCommand = "# Tambahkan software desktop (PC) ke dalam wishlist untuk membuat bundle.";
+                        } else {
+                            $cliCommand = "winget install -e --accept-source-agreements --accept-package-agreements " . implode(" ", $wingetApps);
+                        }
+                    ?>
+                    <div class="flex items-center gap-2">
+                        <input 
+                            type="text" 
+                            id="winget-command" 
+                            readonly 
+                            value="<?= htmlspecialchars($cliCommand) ?>" 
+                            class="bg-transparent border-none text-[11px] font-mono text-emerald-400 w-full md:w-80 px-3 py-2 focus:ring-0 outline-none"
+                        >
+                        <button 
+                            onclick="copyWingetCommand()"
+                            class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 border border-white/5"
+                        >
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            <span id="copy-text">Salin</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+                function copyWingetCommand() {
+                    var copyText = document.getElementById("winget-command");
+                    copyText.select();
+                    copyText.setSelectionRange(0, 99999);
+                    navigator.clipboard.writeText(copyText.value);
+                    
+                    var copyBtnText = document.getElementById("copy-text");
+                    copyBtnText.innerText = "Tersalin!";
+                    setTimeout(function() {
+                        copyBtnText.innerText = "Salin";
+                    }, 2000);
+                }
+            </script>
+        </div>
+    <?php endif; ?>
+
     <?php if (empty($bookmarkedApps)): ?>
         <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
             <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
