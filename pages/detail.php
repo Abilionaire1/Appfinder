@@ -82,13 +82,19 @@ $relatedApps = $stmtRelated->fetchAll();
                     <div class="flex flex-wrap items-center gap-4 text-xs text-slate-600">
                         <span>Oleh <strong class="text-navy font-semibold"><?= htmlspecialchars($app['developer']) ?></strong></span>
                         <span>&bull;</span>
-                        <span class="font-mono text-slate-500">v<?= htmlspecialchars($app['version']) ?></span>
-                        <span>&bull;</span>
-                        <div class="flex items-center gap-1 font-semibold text-slate-800">
-                            <svg class="w-3.5 h-3.5 text-amber-500 fill-amber-500" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                            <span><?= number_format((float)$app['rating'], 1) ?></span>
-                            <span class="text-slate-400 font-normal">(<?= number_format($app['reviews_count']) ?> ulasan)</span>
-                        </div>
+                        <?php if ($app['version'] !== '—'): ?>
+                            <span class="font-mono text-slate-500">v<?= htmlspecialchars($app['version']) ?></span>
+                            <span>&bull;</span>
+                        <?php endif; ?>
+                        <?php if ((float)$app['rating'] > 0): ?>
+                            <div class="flex items-center gap-1 font-semibold text-slate-800">
+                                <svg class="w-3.5 h-3.5 text-amber-500 fill-amber-500" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                <span><?= number_format((float)$app['rating'], 1) ?></span>
+                                <span class="text-slate-400 font-normal">(<?= number_format($app['reviews_count']) ?> ulasan)</span>
+                            </div>
+                        <?php else: ?>
+                            <span class="text-slate-500">Belum ada ulasan komunitas</span>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -319,7 +325,7 @@ $relatedApps = $stmtRelated->fetchAll();
                 </a>
 
                 <p class="text-center text-[10px] text-slate-400 mt-2 font-mono">
-                    v<?= htmlspecialchars($app['version']) ?> • <?= htmlspecialchars($app['license']) ?>
+                    <?= $app['version'] !== '—' ? 'v' . htmlspecialchars($app['version']) . ' • ' : '' ?><?= htmlspecialchars($app['license']) ?>
                 </p>
             </div>
 
@@ -422,7 +428,7 @@ $relatedApps = $stmtRelated->fetchAll();
                 </div>
                 <div class="flex justify-between">
                     <span class="text-slate-500">Unduhan</span>
-                    <span class="font-mono font-semibold text-navy"><?= htmlspecialchars($app['download_count']) ?></span>
+                    <span class="font-mono font-semibold text-navy"><?= htmlspecialchars((string)($app['download_count'] ?? 'Belum tersedia')) ?></span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-slate-500">Pengembang</span>
@@ -460,7 +466,12 @@ $relatedApps = $stmtRelated->fetchAll();
                                         <?= htmlspecialchars($r['name']) ?>
                                     </h4>
                                     <div class="text-[10px] text-slate-500 font-mono">
-                                        <?= htmlspecialchars($r['license']) ?> &bull; ★ <?= number_format((float)$r['rating'], 1) ?>
+                                        <?= htmlspecialchars($r['license']) ?>
+                                        <?php if ((float)$r['rating'] > 0): ?>
+                                            &bull; ★ <?= number_format((float)$r['rating'], 1) ?>
+                                        <?php else: ?>
+                                            &bull; Belum dinilai
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-brand-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
