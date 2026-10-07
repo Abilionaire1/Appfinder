@@ -49,59 +49,63 @@ $totalApps = array_sum(array_column($categories, 'app_count'));
 ?>
 
 <!-- ============================================= -->
-<!-- HERO SECTION (21st.dev hero-01 inspired)      -->
+<!-- HERO SECTION                                  -->
 <!-- ============================================= -->
-<section class="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden">
+<section class="relative pt-14 pb-16 md:pt-20 md:pb-24 overflow-hidden">
     
-    <!-- Warm gradient background -->
-    <div class="absolute bottom-0 left-0 right-0 h-[60%] bg-gradient-to-t from-amber-50/60 via-orange-50/30 to-transparent pointer-events-none"></div>
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-orange-50/50 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-stone-50/80 to-transparent pointer-events-none"></div>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center relative z-10">
         
-        <!-- Main Headline: Sans + Serif Italic mix -->
-        <h1 class="opacity-0 animate-fade-in-up" style="animation-delay: 100ms;">
-            <span class="block text-5xl sm:text-6xl md:text-7xl font-bold text-stone-900 tracking-tight leading-[1.1] font-heading">
+        <h1>
+            <span class="block text-4xl sm:text-5xl md:text-6xl font-bold text-stone-900 tracking-tight leading-[1.1] font-heading">
                 Temukan software terbaik
             </span>
-            <span class="block text-5xl sm:text-6xl md:text-7xl tracking-tight leading-[1.1] mt-1">
+            <span class="block text-4xl sm:text-5xl md:text-6xl tracking-tight leading-[1.1] mt-1">
                 <span class="font-heading font-bold text-stone-900">dengan </span><span class="font-serif italic text-brand-600">kurasi terpercaya</span>
             </span>
         </h1>
 
-        <!-- Supporting text -->
-        <p class="text-stone-500 text-base sm:text-lg max-w-2xl mx-auto mt-6 leading-relaxed opacity-0 animate-fade-in-up" style="animation-delay: 250ms;">
+        <p class="text-stone-500 text-base sm:text-lg max-w-2xl mx-auto mt-5 leading-relaxed">
             Di AppFinder, kami membantu Anda menemukan software legal, open-source, dan gratis berkualitas tinggi — tanpa kompromi keamanan atau jebakan pembajakan.
         </p>
 
-        <!-- CTA Row: Button + Avatar Stack + Rating -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mt-10 opacity-0 animate-fade-in-up" style="animation-delay: 400ms;">
-            
-            <!-- Primary CTA Button (pill + arrow icon) -->
-            <a href="?page=explore" class="inline-flex items-center gap-2 bg-stone-900 hover:bg-stone-800 text-white font-semibold pl-6 pr-2 py-2 rounded-full text-sm transition-all group shadow-lg shadow-stone-900/10">
-                <span>Mulai Jelajahi</span>
-                <span class="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-white/25 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"></path></svg>
-                </span>
-            </a>
-
-            <!-- Avatar Stack + Stars -->
-            <div class="flex items-center gap-3">
-                <div class="flex -space-x-2">
-                    <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop&crop=face" alt="">
-                    <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face" alt="">
-                    <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face" alt="">
-                    <img class="w-8 h-8 rounded-full border-2 border-white object-cover" src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=80&h=80&fit=crop&crop=face" alt="">
-                </div>
-                <div class="text-left">
-                    <div class="flex items-center gap-0.5">
-                        <?php for ($i = 0; $i < 5; $i++): ?>
-                            <svg class="w-3.5 h-3.5 text-brand-500 fill-brand-500" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                        <?php endfor; ?>
-                    </div>
-                    <span class="text-xs text-stone-500 font-medium">Dipercaya <?= $totalApps ?>+ software terkurasi</span>
-                </div>
+        <form action="index.php" method="GET" class="max-w-3xl mx-auto mt-8 bg-white rounded-2xl border border-stone-200 p-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shadow-sm focus-within:border-stone-400 focus-within:shadow-md transition-all">
+            <input type="hidden" name="page" value="explore">
+            <label class="flex min-w-0 flex-1 items-center gap-3 px-3">
+                <svg class="w-5 h-5 text-stone-400 flex-shrink-0" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <span class="sr-only">Cari software</span>
+                <input type="search" name="q" placeholder="Cari software, kategori, atau alternatif..." class="h-11 w-full min-w-0 bg-transparent text-sm text-stone-800 placeholder:text-stone-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-md" autocomplete="off">
+            </label>
+            <div class="flex flex-col sm:flex-row gap-2">
+                <label class="sr-only" for="hero-category">Pilih kategori</label>
+                <select id="hero-category" name="c" class="h-11 w-full sm:w-44 rounded-xl border border-stone-200 bg-stone-50 px-3 text-sm text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <option value="">Semua kategori</option>
+                    <?php foreach ($categories as $cat): ?>
+                        <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="submit" class="h-11 rounded-xl bg-stone-900 px-6 text-sm font-semibold text-white transition-colors hover:bg-stone-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2">
+                    Cari software
+                </button>
             </div>
+        </form>
+
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-stone-500">
+            <span class="mr-1">Populer:</span>
+            <?php foreach (['Blender', 'LibreOffice', 'VLC', 'GIMP'] as $popularSearch): ?>
+                <a href="?page=explore&amp;q=<?= urlencode($popularSearch) ?>" class="rounded-full border border-stone-200 bg-white/80 px-3 py-1.5 font-medium text-stone-600 transition-colors hover:border-stone-400 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500">
+                    <?= htmlspecialchars($popularSearch) ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium text-stone-500">
+            <span><?= number_format($totalApps) ?> software pilihan</span>
+            <span class="hidden sm:inline text-stone-300" aria-hidden="true">/</span>
+            <span><?= count($categories) ?> kategori</span>
+            <span class="hidden sm:inline text-stone-300" aria-hidden="true">/</span>
+            <span>Legal, gratis, dan open-source</span>
         </div>
 
     </div>
@@ -121,7 +125,7 @@ $totalApps = array_sum(array_column($categories, 'app_count'));
     <div class="relative">
         <div class="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
         <div class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
-        <div class="flex animate-marquee marquee-track" style="width: max-content;">
+        <div class="flex motion-safe:animate-marquee marquee-track" style="width: max-content;">
             <?php 
             $brands = ['Blender', 'LibreOffice', 'GIMP', 'VLC Player', 'VS Code', 'Audacity', 'OBS Studio', 'Firefox', 'Inkscape', 'Krita'];
             $brandIcons = [
@@ -147,32 +151,6 @@ $totalApps = array_sum(array_column($categories, 'app_count'));
                     </div>
             <?php endforeach; endfor; ?>
         </div>
-    </div>
-</section>
-
-<!-- ============================================= -->
-<!-- SEARCH SECTION                                -->
-<!-- ============================================= -->
-<section class="py-12 bg-stone-50/50">
-    <div class="max-w-2xl mx-auto px-4">
-        <form action="index.php" method="GET" class="bg-white rounded-2xl border border-stone-200 p-2 flex flex-col sm:flex-row items-center gap-2 shadow-sm focus-within:border-stone-400 focus-within:shadow-md transition-all">
-            <input type="hidden" name="page" value="explore">
-            <div class="flex items-center gap-2.5 px-3 w-full flex-grow">
-                <svg class="w-5 h-5 text-stone-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <input type="text" name="q" placeholder="Cari software... (cth: Blender, LibreOffice)" class="w-full py-2 bg-transparent text-stone-800 placeholder-stone-400 focus:outline-none text-sm" autocomplete="off">
-            </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-                <select name="c" class="bg-stone-50 text-stone-600 text-xs font-medium px-3 py-2.5 rounded-xl focus:outline-none w-full sm:w-auto border border-stone-200">
-                    <option value="">Semua Kategori</option>
-                    <?php foreach ($categories as $cat): ?>
-                        <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <button type="submit" class="bg-stone-900 hover:bg-stone-800 text-white px-6 py-2.5 rounded-xl font-semibold text-xs transition-colors whitespace-nowrap">
-                    Cari
-                </button>
-            </div>
-        </form>
     </div>
 </section>
 
