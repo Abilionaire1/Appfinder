@@ -125,7 +125,7 @@ $totalApps = array_sum(array_column($categories, 'app_count'));
     <div class="relative">
         <div class="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
         <div class="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
-        <div class="flex motion-safe:animate-marquee marquee-track" style="width: max-content;">
+        <div class="flex motion-safe:animate-marquee marquee-track" style="width: max-content; animation-play-state: running;">
             <?php 
             $brands = ['Blender', 'LibreOffice', 'GIMP', 'VLC Player', 'VS Code', 'Audacity', 'OBS Studio', 'Firefox', 'Inkscape', 'Krita'];
             $brandIcons = [
