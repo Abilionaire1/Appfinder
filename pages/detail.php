@@ -104,6 +104,7 @@ $relatedApps = $stmtRelated->fetchAll();
                 <button 
                     type="button" 
                     onclick="toggleBookmark(<?= $app['id'] ?>, this)"
+                    aria-pressed="<?= $isBookmarked ? 'true' : 'false' ?>"
                     class="px-4 py-2.5 rounded-xl border border-slate-300 hover:border-slate-400 text-xs font-semibold flex items-center gap-2 transition-colors <?= $isBookmarked ? 'text-brand-600 bg-brand-50 border-brand-200' : 'text-slate-700 bg-white' ?>"
                 >
                     <svg class="w-4 h-4" fill="<?= $isBookmarked ? 'currentColor' : 'none' ?>" stroke="currentColor" viewBox="0 0 24 24">

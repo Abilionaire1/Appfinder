@@ -181,7 +181,8 @@ $bookmarkedApps = $stmtBm->fetchAll();
                             <!-- Remove from Bookmarks Button -->
                             <button 
                                 type="button" 
-                                onclick="toggleBookmark(<?= $app['id'] ?>, this); setTimeout(() => location.reload(), 400);"
+                                onclick="toggleBookmark(<?= $app['id'] ?>, this).then(success => { if (success) location.reload(); })"
+                                aria-pressed="true"
                                 class="p-1.5 rounded-lg border border-slate-200 text-brand-600 bg-brand-50 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-colors"
                                 title="Hapus dari tersimpan"
                             >

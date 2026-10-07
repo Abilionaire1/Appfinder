@@ -113,32 +113,66 @@
         }
 
         async function toggleBookmark(appId, btnElement) {
+            if (btnElement) {
+                btnElement.disabled = true;
+            }
+
             try {
-                const response = await fetch(`index.php?action=toggle_bookmark&id=${appId}`);
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+                const response = await fetch('index.php?action=toggle_bookmark', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRF-Token': csrfToken
+                    },
+                    body: new URLSearchParams({ id: String(appId) })
+                });
+                const data = await response.json();
+
                 if (response.status === 401) {
                     showToast('Silakan login terlebih dahulu untuk menyimpan software.', false);
-                    return;
+                    return false;
                 }
-                const data = await response.json();
+
+                if (!response.ok) {
+                    showToast(data.error || 'Gagal mengubah software tersimpan.', false);
+                    return false;
+                }
+
+                if (data.status !== 'added' && data.status !== 'removed') {
+                    showToast('Respons server tidak dikenali. Coba muat ulang halaman.', false);
+                    return false;
+                }
+
                 if (data.status === 'added') {
                     showToast('Software berhasil disimpan ke daftar Anda.');
                     if (btnElement) {
                         btnElement.classList.add('text-brand-600', 'bg-brand-50');
-                        btnElement.classList.remove('text-slate-400', 'bg-white');
+                        btnElement.classList.remove('text-stone-400', 'bg-white');
                         const icon = btnElement.querySelector('svg');
                         if (icon) icon.setAttribute('fill', 'currentColor');
+                        btnElement.setAttribute('aria-pressed', 'true');
                     }
                 } else if (data.status === 'removed') {
                     showToast('Software dihapus dari daftar tersimpan.');
                     if (btnElement) {
                         btnElement.classList.remove('text-brand-600', 'bg-brand-50');
-                        btnElement.classList.add('text-slate-400', 'bg-white');
+                        btnElement.classList.add('text-stone-400', 'bg-white');
                         const icon = btnElement.querySelector('svg');
                         if (icon) icon.setAttribute('fill', 'none');
+                        btnElement.setAttribute('aria-pressed', 'false');
                     }
                 }
+
+                return true;
             } catch (err) {
+                console.error('Bookmark update failed:', err);
                 showToast('Gagal mengubah status simpan.', false);
+                return false;
+            } finally {
+                if (btnElement) {
+                    btnElement.disabled = false;
+                }
             }
         }
     </script>

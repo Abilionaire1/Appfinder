@@ -236,6 +236,7 @@ if (isset($_SESSION['user_id'])) {
                                     <button 
                                         type="button" 
                                         onclick="toggleBookmark(<?= $app['id'] ?>, this)"
+                                        aria-pressed="<?= $isBookmarked ? 'true' : 'false' ?>"
                                         class="p-1.5 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors <?= $isBookmarked ? 'text-brand-600 bg-brand-50' : 'text-slate-400 bg-white' ?>"
                                         title="Simpan software"
                                     >

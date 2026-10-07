@@ -11,37 +11,66 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Action Handler (e.g. AJAX Bookmark Toggle)
 if (isset($_GET['action']) && $_GET['action'] === 'toggle_bookmark') {
     header('Content-Type: application/json');
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Allow: POST');
+        http_response_code(405);
+        echo json_encode(['error' => 'Method not allowed']);
+        exit;
+    }
+
     if (!isset($_SESSION['user_id'])) {
         http_response_code(401);
         echo json_encode(['error' => 'Unauthorized']);
         exit;
     }
-    
-    $appId = (int)($_GET['id'] ?? 0);
-    $userId = (int)$_SESSION['user_id'];
-    
-    if ($appId <= 0) {
+
+    $submittedToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+    if (!is_string($submittedToken) || !hash_equals($_SESSION['csrf_token'], $submittedToken)) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Invalid security token. Refresh the page and try again.']);
+        exit;
+    }
+
+    $appIdInput = $_POST['id'] ?? null;
+    $appId = is_string($appIdInput)
+        ? filter_var($appIdInput, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
+        : false;
+    if ($appId === false) {
         http_response_code(400);
         echo json_encode(['error' => 'Invalid app ID']);
         exit;
     }
-    
-    // Check if already bookmarked
-    $stmt = $pdo->prepare("SELECT id FROM bookmarks WHERE user_id = ? AND app_id = ?");
-    $stmt->execute([$userId, $appId]);
-    $existing = $stmt->fetch();
-    
-    if ($existing) {
+
+    $userId = (int)$_SESSION['user_id'];
+
+    $appCheck = $pdo->prepare("SELECT id FROM apps WHERE id = ?");
+    $appCheck->execute([$appId]);
+    if (!$appCheck->fetch()) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Software not found']);
+        exit;
+    }
+
+    $insert = $pdo->prepare("
+        INSERT INTO bookmarks (user_id, app_id) VALUES (?, ?)
+        ON DUPLICATE KEY UPDATE id = id
+    ");
+    $insert->execute([$userId, $appId]);
+
+    if ($insert->rowCount() === 1) {
+        echo json_encode(['status' => 'added']);
+    } else {
         $del = $pdo->prepare("DELETE FROM bookmarks WHERE user_id = ? AND app_id = ?");
         $del->execute([$userId, $appId]);
         echo json_encode(['status' => 'removed']);
-    } else {
-        $ins = $pdo->prepare("INSERT INTO bookmarks (user_id, app_id) VALUES (?, ?)");
-        $ins->execute([$userId, $appId]);
-        echo json_encode(['status' => 'added']);
     }
     exit;
 }
