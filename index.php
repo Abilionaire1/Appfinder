@@ -80,10 +80,10 @@ $page = $_GET['page'] ?? 'home';
 $allowed_pages = ['home', 'explore', 'detail', 'login', 'register', 'dashboard', 'logout'];
 $admin_pages = ['index', 'apps', 'category'];
 
-if (in_array($page, $allowed_pages) && file_exists(__DIR__ . "/pages/{$page}.php")) {
-    require __DIR__ . "/pages/{$page}.php";
-} elseif (isset($_GET['admin']) && in_array($_GET['admin'], $admin_pages) && file_exists(__DIR__ . "/pages/admin/{$_GET['admin']}.php")) {
+if (isset($_GET['admin']) && is_string($_GET['admin']) && in_array($_GET['admin'], $admin_pages, true)) {
     require __DIR__ . "/pages/admin/{$_GET['admin']}.php";
+} elseif (is_string($page) && in_array($page, $allowed_pages, true) && file_exists(__DIR__ . "/pages/{$page}.php")) {
+    require __DIR__ . "/pages/{$page}.php";
 } else {
     require __DIR__ . "/pages/home.php";
 }

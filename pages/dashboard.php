@@ -48,6 +48,11 @@ $bookmarkedApps = $stmtBm->fetchAll();
             </div>
 
             <div class="flex items-center gap-3">
+                <?php if ($user['role'] === 'admin'): ?>
+                    <a href="?admin=index" class="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-700 text-white text-xs font-semibold transition-colors">
+                        Panel Admin
+                    </a>
+                <?php endif; ?>
                 <a href="?page=explore" class="px-4 py-2 rounded-lg border border-slate-200 hover:border-slate-300 text-xs font-semibold text-slate-700 bg-white transition-colors">
                     Jelajahi Software Baru
                 </a>
