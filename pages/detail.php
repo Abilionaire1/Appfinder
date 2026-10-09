@@ -435,6 +435,27 @@ $relatedApps = $stmtRelated->fetchAll();
                     <span class="text-slate-500">Pengembang</span>
                     <span class="font-semibold text-navy truncate max-w-[140px] text-right"><?= htmlspecialchars($app['developer']) ?></span>
                 </div>
+                <?php if ($app['min_ram'] !== null || $app['recommended_ram'] !== null): ?>
+                    <div class="flex justify-between gap-4">
+                        <span class="text-slate-500">RAM</span>
+                        <span class="font-semibold text-navy text-right">
+                            <?= $app['min_ram'] !== null ? htmlspecialchars((string)$app['min_ram']) . ' GB min.' : 'Tidak tersedia' ?>
+                            <?= $app['recommended_ram'] !== null ? ' / ' . htmlspecialchars((string)$app['recommended_ram']) . ' GB disarankan' : '' ?>
+                        </span>
+                    </div>
+                <?php endif; ?>
+                <?php if (!empty($app['min_os'])): ?>
+                    <div class="flex justify-between gap-4">
+                        <span class="text-slate-500">OS minimum</span>
+                        <span class="font-semibold text-navy text-right"><?= htmlspecialchars($app['min_os']) ?></span>
+                    </div>
+                <?php endif; ?>
+                <?php if (!empty($app['winget_id'])): ?>
+                    <div class="flex justify-between gap-4">
+                        <span class="text-slate-500">Winget</span>
+                        <code class="font-mono font-semibold text-navy text-right break-all"><?= htmlspecialchars($app['winget_id']) ?></code>
+                    </div>
+                <?php endif; ?>
                 <?php if (!empty($app['website_url'])): ?>
                     <div class="pt-2 border-t border-slate-100 flex justify-between items-center">
                         <span class="text-slate-500">Website Resmi</span>

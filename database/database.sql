@@ -52,7 +52,11 @@ CREATE TABLE `apps` (
   `website_url` varchar(255) DEFAULT '',
   `is_open_source` tinyint(1) DEFAULT '0',
   `version` varchar(50) DEFAULT '1.0',
-  `platforms` varchar(100) DEFAULT 'Android, Web'
+  `platforms` varchar(100) DEFAULT 'Android, Web',
+  `min_ram` decimal(4,1) unsigned DEFAULT NULL,
+  `recommended_ram` decimal(4,1) unsigned DEFAULT NULL,
+  `min_os` varchar(100) DEFAULT NULL,
+  `winget_id` varchar(150) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --

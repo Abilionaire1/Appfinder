@@ -22,6 +22,7 @@ $categoryMeta = [
     'Art' => '<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2z"/>',
     'Music' => '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
     'Books' => '<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+    'Utility' => '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 3v4M16 3v4M8 17v4M16 17v4M3 8h4M17 8h4M3 16h4M17 16h4"/><rect width="6" height="6" x="9" y="9" rx="1"/>',
     'Quran' => '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M10 2v8l3-2 3 2V2"/>'
 ];
 
@@ -35,6 +36,18 @@ $stmtFeatured = $pdo->query("
     LIMIT 6
 ");
 $featuredApps = $stmtFeatured->fetchAll();
+
+// Curated free or open-source replacements for commercial software.
+$stmtAlternatives = $pdo->query("
+    SELECT a.*, c.name AS category_name
+    FROM apps a
+    JOIN categories c ON c.id = a.category_id
+    WHERE TRIM(COALESCE(a.alternative_to, '')) <> ''
+      AND (a.is_free = 1 OR a.is_open_source = 1)
+    ORDER BY a.is_open_source DESC, a.featured DESC, a.rating DESC, a.reviews_count DESC
+    LIMIT 3
+");
+$alternativeApps = $stmtAlternatives->fetchAll();
 
 // Fetch bookmark IDs
 $userBookmarks = [];
@@ -67,7 +80,7 @@ $totalApps = array_sum(array_column($categories, 'app_count'));
         </h1>
 
         <p class="text-stone-500 text-base sm:text-lg max-w-2xl mx-auto mt-5 leading-relaxed">
-            Di AppFinder, kami membantu Anda menemukan software legal, open-source, dan gratis berkualitas tinggi — tanpa kompromi keamanan atau jebakan pembajakan.
+            Di AppFinder, kami membantu Anda menemukan software legal, open-source, dan gratis berkualitas tinggi tanpa kompromi keamanan atau jebakan pembajakan.
         </p>
 
         <form action="index.php" method="GET" class="max-w-3xl mx-auto mt-8 bg-white rounded-2xl border border-stone-200 p-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shadow-sm focus-within:border-stone-400 focus-within:shadow-md transition-all">
@@ -284,7 +297,7 @@ $totalApps = array_sum(array_column($categories, 'app_count'));
                                     <span class="text-sm"><?= number_format((float)$app['rating'], 1) ?></span>
                                 </div>
                             </div>
-                            <p class="text-xs text-stone-500 mb-3 truncate"><?= htmlspecialchars($app['developer']) ?> ? <?= htmlspecialchars($app['category_name']) ?></p>
+                            <p class="text-xs text-stone-500 mb-3 truncate"><?= htmlspecialchars($app['developer']) ?> &bull; <?= htmlspecialchars($app['category_name']) ?></p>
                         </div>
                         
                         <p class="text-xs text-stone-600 line-clamp-2 leading-relaxed mb-4">
@@ -324,30 +337,28 @@ $totalApps = array_sum(array_column($categories, 'app_count'));
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <?php
-            $alts = [
-                ['from' => 'Adobe Photoshop', 'to' => 'GIMP', 'desc' => 'Mendukung layer blending, tool retouching presisi, path editing, serta dukungan plugin komunitas untuk pengeditan foto profesional tanpa biaya.', 'license' => 'GNU GPLv3', 'q' => 'GIMP'],
-                ['from' => 'Microsoft 365', 'to' => 'LibreOffice', 'desc' => 'Suite dokumen mandiri yang kompatibel penuh dengan format .docx, .xlsx, dan .pptx tanpa lock-in lisensi proprietary.', 'license' => 'MPL 2.0', 'q' => 'LibreOffice'],
-                ['from' => 'Autodesk Maya', 'to' => 'Blender 3D', 'desc' => 'Standar industri pembuatan aset 3D, animasi karakter, game modeling, dan simulasi fisika yang 100% bebas biaya seumur hidup.', 'license' => 'GPL v3', 'q' => 'Blender'],
-            ];
-            foreach ($alts as $alt): ?>
+            <?php foreach ($alternativeApps as $app): ?>
+                <?php $commercialAlternatives = array_values(array_filter(array_map('trim', explode(',', $app['alternative_to'])))); ?>
                 <div class="ui-card rounded-2xl p-6 flex flex-col justify-between">
                     <div>
-                        <div class="text-[10px] font-bold text-rose-500 uppercase tracking-wider mb-2 font-mono">Pengganti <?= $alt['from'] ?></div>
+                        <div class="text-[10px] font-bold text-rose-500 uppercase tracking-wider mb-2 font-mono">Alternatif legal untuk</div>
                         <div class="flex items-center gap-3 pb-4 border-b border-stone-100">
-                            <span class="text-sm text-stone-400 line-through"><?= $alt['from'] ?></span>
-                            <span class="text-stone-300">→</span>
-                            <span class="text-base font-bold text-stone-900"><?= $alt['to'] ?></span>
+                            <span class="text-sm text-stone-400 line-through truncate"><?= htmlspecialchars($commercialAlternatives[0] ?? $app['alternative_to']) ?></span>
+                            <span class="text-stone-300" aria-hidden="true">&rarr;</span>
+                            <span class="text-base font-bold text-stone-900 truncate"><?= htmlspecialchars($app['name']) ?></span>
                         </div>
-                        <p class="text-xs text-stone-500 mt-4 leading-relaxed"><?= $alt['desc'] ?></p>
+                        <p class="text-xs text-stone-500 mt-4 leading-relaxed"><?= htmlspecialchars($app['description']) ?></p>
                     </div>
                     <div class="mt-5 pt-4 border-t border-stone-100 flex items-center justify-between text-xs">
-                        <span class="font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full text-[10px] font-semibold border border-emerald-200"><?= $alt['license'] ?></span>
-                        <a href="?page=explore&q=<?= $alt['q'] ?>" class="font-semibold text-stone-600 hover:text-brand-600 transition-colors">Lihat Profil →</a>
+                        <span class="font-mono text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full text-[10px] font-semibold border border-emerald-200"><?= htmlspecialchars($app['license']) ?></span>
+                        <a href="?page=detail&id=<?= (int)$app['id'] ?>" class="font-semibold text-stone-600 hover:text-brand-600 transition-colors">Lihat profil &rarr;</a>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
+        <?php if (empty($alternativeApps)): ?>
+            <p class="mt-6 text-center text-sm text-stone-500">Alternatif software akan muncul setelah data katalog tersedia.</p>
+        <?php endif; ?>
     </div>
 </section>
 
@@ -366,7 +377,7 @@ $totalApps = array_sum(array_column($categories, 'app_count'));
                     Akses ke software berkualitas adalah hak setiap pengguna, tanpa kompromi keamanan data atau melanggar hak cipta pengembang.
                 </p>
                 <a href="?page=register" class="inline-flex items-center gap-2 bg-stone-900 hover:bg-stone-800 text-white font-semibold pl-5 pr-2 py-2 rounded-full text-xs transition-colors group">
-                    <span>Punya rekomendasi?</span>
+                    <span>Buat akun untuk bookmark</span>
                     <span class="w-6 h-6 rounded-full bg-white/15 flex items-center justify-center group-hover:bg-white/25 transition-colors">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"></path></svg>
                     </span>
@@ -399,13 +410,13 @@ $totalApps = array_sum(array_column($categories, 'app_count'));
     <div class="absolute inset-0 bg-gradient-to-br from-brand-900/20 via-transparent to-transparent pointer-events-none"></div>
     <div class="max-w-3xl mx-auto px-4 relative z-10">
         <h2 class="text-4xl sm:text-5xl font-bold mb-5 font-heading tracking-tight">
-            Tahu software gratis <span class="font-serif italic text-brand-400">berkualitas?</span>
+            Temukan software gratis <span class="font-serif italic text-brand-400">berkualitas.</span>
         </h2>
         <p class="text-base text-stone-400 mb-10 max-w-xl mx-auto leading-relaxed">
-            Bagikan aplikasi open-source favorit Anda untuk membantu komunitas menemukan software yang tepat.
+            Simpan software pilihan Anda dan temukan alternatif legal untuk aplikasi berbayar yang biasa digunakan.
         </p>
         <a href="?page=register" class="inline-flex items-center gap-2 bg-white text-stone-900 hover:bg-stone-100 font-bold pl-7 pr-2.5 py-2.5 rounded-full text-sm transition-colors group">
-            <span>Kirimkan Rekomendasi</span>
+            <span>Buat akun gratis</span>
             <span class="w-8 h-8 rounded-full bg-stone-900 text-white flex items-center justify-center group-hover:bg-stone-800 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H7M17 7v10"></path></svg>
             </span>

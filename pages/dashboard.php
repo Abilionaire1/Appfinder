@@ -56,13 +56,55 @@ $bookmarkedApps = $stmtBm->fetchAll();
                 <a href="?page=explore" class="px-4 py-2 rounded-lg border border-slate-200 hover:border-slate-300 text-xs font-semibold text-slate-700 bg-white transition-colors">
                     Jelajahi Software Baru
                 </a>
-                <a href="?page=logout" class="px-4 py-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition-colors">
+                <button type="button" data-open-logout-dialog class="px-4 py-2 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition-colors">
                     Keluar
-                </a>
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+<dialog id="logout-confirmation" aria-labelledby="logout-dialog-title" aria-describedby="logout-dialog-description" class="w-[calc(100%-2rem)] max-w-md rounded-2xl border border-stone-200 bg-white p-0 text-left shadow-2xl backdrop:bg-stone-950/50">
+    <div class="p-6 sm:p-7">
+        <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-rose-50 text-rose-700">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M18 15l3-3m0 0-3-3m3 3H9"></path></svg>
+        </div>
+        <h2 id="logout-dialog-title" class="text-lg font-bold text-stone-900 font-heading">Yakin ingin keluar?</h2>
+        <p id="logout-dialog-description" class="mt-2 text-sm leading-6 text-slate-600">Anda perlu masuk kembali untuk melihat software yang tersimpan di akun.</p>
+
+        <div class="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button type="button" data-close-logout-dialog class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500">
+                Tetap di sini
+            </button>
+            <form method="post" action="?page=logout">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+                <button type="submit" class="w-full rounded-xl bg-rose-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-700 sm:w-auto">
+                    Ya, keluar
+                </button>
+            </form>
+        </div>
+    </div>
+</dialog>
+
+<script>
+    (() => {
+        const dialog = document.getElementById('logout-confirmation');
+        const openButton = document.querySelector('[data-open-logout-dialog]');
+        const closeButton = document.querySelector('[data-close-logout-dialog]');
+
+        if (!(dialog instanceof HTMLDialogElement) || !openButton || !closeButton) {
+            return;
+        }
+
+        openButton.addEventListener('click', () => dialog.showModal());
+        closeButton.addEventListener('click', () => dialog.close());
+        dialog.addEventListener('click', (event) => {
+            if (event.target === dialog) {
+                dialog.close();
+            }
+        });
+    })();
+</script>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     

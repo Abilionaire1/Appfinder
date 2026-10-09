@@ -19,12 +19,16 @@ $values = [
     'alternative_to' => '',
     'version' => '',
     'platforms' => '',
+    'min_ram' => '',
+    'recommended_ram' => '',
+    'min_os' => '',
+    'winget_id' => '',
     'is_open_source' => 0,
     'featured' => 0,
 ];
 
 if ($editingId !== null) {
-    $stmt = $pdo->prepare('SELECT id, name, slug, category_id, description, developer, icon, play_store_url, website_url, license, alternative_to, version, platforms, is_open_source, featured FROM apps WHERE id = ?');
+    $stmt = $pdo->prepare('SELECT id, name, slug, category_id, description, developer, icon, play_store_url, website_url, license, alternative_to, version, platforms, min_ram, recommended_ram, min_os, winget_id, is_open_source, featured FROM apps WHERE id = ?');
     $stmt->execute([$editingId]);
     $app = $stmt->fetch();
     if (!$app) {
@@ -70,11 +74,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'alternative_to' => admin_post_string('alternative_to'),
                 'version' => admin_post_string('version'),
                 'platforms' => admin_post_string('platforms'),
+                'min_ram' => admin_post_string('min_ram'),
+                'recommended_ram' => admin_post_string('recommended_ram'),
+                'min_os' => admin_post_string('min_os'),
+                'winget_id' => admin_post_string('winget_id'),
                 'is_open_source' => isset($_POST['is_open_source']) ? 1 : 0,
                 'featured' => isset($_POST['featured']) ? 1 : 0,
             ];
             $values['slug'] = admin_slugify($values['slug'] !== '' ? $values['slug'] : $values['name']);
             $categoryId = filter_var($values['category_id'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            $isRamValue = static fn (string $value): bool => $value === '' || preg_match('/^\d{1,3}(?:\.\d)?$/', $value) === 1;
+            $minRam = $values['min_ram'] === '' ? null : (float)$values['min_ram'];
+            $recommendedRam = $values['recommended_ram'] === '' ? null : (float)$values['recommended_ram'];
 
             if ($values['name'] === '' || strlen($values['name']) > 100) {
                 $error = 'Nama software wajib diisi dan maksimal 100 karakter.';
@@ -82,8 +93,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Slug tidak valid atau terlalu panjang.';
             } elseif ($categoryId === false) {
                 $error = 'Pilih kategori yang valid.';
-            } elseif (strlen($values['developer']) > 100 || strlen($values['icon']) > 255 || strlen($values['license']) > 100 || strlen($values['alternative_to']) > 255 || strlen($values['version']) > 50 || strlen($values['platforms']) > 100) {
+            } elseif (strlen($values['developer']) > 100 || strlen($values['icon']) > 255 || strlen($values['license']) > 100 || strlen($values['alternative_to']) > 255 || strlen($values['version']) > 50 || strlen($values['platforms']) > 100 || strlen($values['min_os']) > 100 || strlen($values['winget_id']) > 150) {
                 $error = 'Salah satu field melebihi batas panjang yang diizinkan.';
+            } elseif (!$isRamValue($values['min_ram']) || !$isRamValue($values['recommended_ram'])) {
+                $error = 'RAM harus berupa angka dalam GB, misalnya 4 atau 8.0.';
+            } elseif ($minRam !== null && $recommendedRam !== null && $recommendedRam < $minRam) {
+                $error = 'RAM rekomendasi tidak boleh lebih kecil dari RAM minimum.';
             } elseif (!admin_valid_url($values['icon']) || !admin_valid_url($values['play_store_url']) || !admin_valid_url($values['website_url'])) {
                 $error = 'URL ikon, unduhan, dan situs harus menggunakan URL http atau https yang valid.';
             } else {
@@ -110,16 +125,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $values['alternative_to'],
                         $values['version'],
                         $values['platforms'],
+                        $minRam,
+                        $recommendedRam,
+                        $values['min_os'] === '' ? null : $values['min_os'],
+                        $values['winget_id'] === '' ? null : $values['winget_id'],
                         $values['is_open_source'],
                         $values['featured'],
                     ];
 
                     if ($editingId !== null) {
                         $fields[] = $editingId;
-                        $save = $pdo->prepare('UPDATE apps SET name = ?, slug = ?, category_id = ?, description = ?, developer = ?, icon = ?, play_store_url = ?, website_url = ?, license = ?, alternative_to = ?, version = ?, platforms = ?, is_open_source = ?, featured = ? WHERE id = ?');
+                        $save = $pdo->prepare('UPDATE apps SET name = ?, slug = ?, category_id = ?, description = ?, developer = ?, icon = ?, play_store_url = ?, website_url = ?, license = ?, alternative_to = ?, version = ?, platforms = ?, min_ram = ?, recommended_ram = ?, min_os = ?, winget_id = ?, is_open_source = ?, featured = ? WHERE id = ?');
                         $save->execute($fields);
                     } else {
-                        $save = $pdo->prepare('INSERT INTO apps (name, slug, category_id, description, developer, icon, play_store_url, website_url, license, alternative_to, version, platforms, is_open_source, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+                        $save = $pdo->prepare('INSERT INTO apps (name, slug, category_id, description, developer, icon, play_store_url, website_url, license, alternative_to, version, platforms, min_ram, recommended_ram, min_os, winget_id, is_open_source, featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
                         $save->execute($fields);
                     }
 
@@ -221,6 +240,18 @@ require_once __DIR__ . '/../../includes/header.php';
                     </label>
                     <label class="text-sm font-medium text-slate-700">Platform
                         <input name="platforms" maxlength="100" value="<?= admin_escape($values['platforms']) ?>" placeholder="Windows, macOS, Linux" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                    </label>
+                    <label class="text-sm font-medium text-slate-700">RAM minimum (GB)
+                        <input type="number" name="min_ram" min="0" max="999" step="0.1" inputmode="decimal" value="<?= admin_escape((string)$values['min_ram']) ?>" placeholder="4" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                    </label>
+                    <label class="text-sm font-medium text-slate-700">RAM rekomendasi (GB)
+                        <input type="number" name="recommended_ram" min="0" max="999" step="0.1" inputmode="decimal" value="<?= admin_escape((string)$values['recommended_ram']) ?>" placeholder="8" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                    </label>
+                    <label class="text-sm font-medium text-slate-700">Windows minimum
+                        <input name="min_os" maxlength="100" value="<?= admin_escape($values['min_os']) ?>" placeholder="Windows 10 64-bit" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
+                    </label>
+                    <label class="text-sm font-medium text-slate-700">Winget package ID
+                        <input name="winget_id" maxlength="150" value="<?= admin_escape($values['winget_id']) ?>" placeholder="Contoh: GIMP.GIMP" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
                     </label>
                     <label class="text-sm font-medium text-slate-700 sm:col-span-2">Alternatif untuk
                         <input name="alternative_to" maxlength="255" value="<?= admin_escape($values['alternative_to']) ?>" class="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2">
